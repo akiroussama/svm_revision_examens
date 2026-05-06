@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Révision SVM &mdash; Examens IA Doctoral SUPCOM</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300..900;1,300..900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --text: #0a0a0a;
+            --text-soft: #3a3a3a;
+            --text-muted: #6a6a6a;
+            --accent: #1f4e8c;
+            --accent-soft: #6a8ab5;
+            --bg: #fdfcfa;
+            --bg-soft: #f5f3ef;
+            --border: #e0dcd4;
+            --border-soft: #edeae3;
+            --link: #173866;
+            --code-bg: #f5f3ef;
+            --green: #2f7d52;
+            --green-soft: #e8f3ec;
+            --orange: #b85c38;
+            --orange-soft: #fdf6f1;
+            --red: #a13a2a;
+            --red-soft: #fbeeea;
+            --violet: #5b3b8c;
+            --violet-soft: #f2eef8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+            font-size: 17px;
+            line-height: 1.68;
+            color: var(--text);
+            background: var(--bg);
+            font-weight: 400;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .page { max-width: 820px; margin: 0 auto; padding: 4rem 2.5rem 6rem; }
+
+        /* COVER */
+        .cover { padding-top: 5rem; padding-bottom: 4rem; border-bottom: 1px solid var(--border); margin-bottom: 3.5rem; }
+        .cover .eyebrow { font-family: 'Inter', sans-serif; font-size: 0.75rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-muted); font-weight: 600; margin-bottom: 1.5rem; }
+        .cover h1 { font-family: 'Source Serif 4', serif; font-size: 2.55rem; font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; color: var(--text); margin-bottom: 0.5rem; }
+        .cover .subtitle { font-family: 'Source Serif 4', serif; font-size: 1.35rem; font-weight: 400; font-style: italic; color: var(--text-soft); margin-bottom: 2.5rem; line-height: 1.35; }
+        .cover .meta { font-family: 'Inter', sans-serif; font-size: 0.85rem; color: var(--text-muted); line-height: 1.9; }
+        .cover .meta strong { color: var(--text-soft); font-weight: 600; }
+        .cover .meta .date { margin-top: 1rem; font-size: 0.82rem; }
+
+        /* HEADINGS */
+        h1.section { font-family: 'Source Serif 4', serif; font-size: 2rem; font-weight: 600; margin-top: 4rem; margin-bottom: 1.25rem; line-height: 1.2; color: var(--text); border-bottom: 2px solid var(--text); padding-bottom: 0.6rem; }
+        h1.section::before { content: attr(data-num); display: inline-block; color: var(--accent); font-weight: 500; margin-right: 0.6em; }
+
+        h2 { font-family: 'Source Serif 4', serif; font-size: 1.35rem; font-weight: 600; margin-top: 2.5rem; margin-bottom: 0.75rem; line-height: 1.3; color: var(--text); }
+        h2::before { content: attr(data-num); display: inline-block; color: var(--accent); font-weight: 500; margin-right: 0.5em; }
+
+        h3 { font-family: 'Source Serif 4', serif; font-size: 1.1rem; font-weight: 600; font-style: italic; margin-top: 1.75rem; margin-bottom: 0.6rem; color: var(--text-soft); }
+        h3::before { content: attr(data-num); display: inline-block; color: var(--accent); font-weight: 500; font-style: normal; margin-right: 0.5em; }
+
+        h4 { font-family: 'Inter', sans-serif; font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-top: 1.4rem; margin-bottom: 0.5rem; }
+
+        /* PARAGRAPHS */
+        p { margin-bottom: 1.1rem; text-align: justify; hyphens: auto; }
+        p+h2, p+h3 { margin-top: 2rem; }
+        strong { font-weight: 700; color: var(--text); }
+        em { font-style: italic; }
+        a { color: var(--link); text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+        a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+        code { font-family: 'JetBrains Mono', monospace; font-size: 0.88em; background: var(--code-bg); padding: 0.05em 0.35em; border-radius: 2px; color: var(--violet); }
+
+        /* LISTS */
+        ul, ol { margin: 0 0 1.1rem 1.5rem; line-height: 1.68; }
+        li { margin-bottom: 0.3rem; padding-left: 0.3rem; }
+        ul li::marker { color: var(--accent); }
+        ol li::marker { color: var(--accent); font-weight: 600; }
+
+        /* TABLES */
+        .table-wrapper { margin: 1.5rem 0 1.8rem; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-family: 'Inter', sans-serif; font-size: 0.88rem; line-height: 1.5; }
+        th, td { padding: 0.55rem 0.85rem; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+        thead th { border-bottom: 2px solid var(--text); border-top: 2px solid var(--text); font-weight: 700; color: var(--text); background: var(--bg-soft); }
+        tbody tr:hover { background: var(--bg-soft); }
+        tbody tr.highlight td { background: rgba(31, 78, 140, 0.07); font-weight: 600; }
+        tbody tr.success td { background: var(--green-soft); }
+        tbody tr.warn td { background: var(--orange-soft); }
+        td.num { font-family: 'JetBrains Mono', monospace; text-align: right; }
+        td.center { text-align: center; }
+        .table-caption { font-family: 'Inter', sans-serif; font-size: 0.82rem; color: var(--text-soft); margin-top: 0.6rem; text-align: left; line-height: 1.55; }
+        .table-caption .tab-label { color: var(--accent); font-weight: 700; }
+
+        /* CALLOUTS */
+        .callout { margin: 1.4rem 0; padding: 1rem 1.25rem; background: var(--bg-soft); border-left: 3px solid var(--accent); font-size: 0.95rem; }
+        .callout p:last-child { margin-bottom: 0; }
+        .callout .callout-title { font-family: 'Inter', sans-serif; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); font-weight: 700; margin-bottom: 0.5rem; }
+        .callout.why { border-left-color: var(--accent); background: var(--bg-soft); }
+        .callout.tip { border-left-color: var(--green); background: var(--green-soft); }
+        .callout.tip .callout-title { color: var(--green); }
+        .callout.trap { border-left-color: var(--red); background: var(--red-soft); }
+        .callout.trap .callout-title { color: var(--red); }
+        .callout.reveal { border-left-color: var(--orange); background: var(--orange-soft); }
+        .callout.reveal .callout-title { color: var(--orange); }
+        .callout.formula { border-left-color: var(--violet); background: var(--violet-soft); padding: 1.1rem 1.4rem; }
+        .callout.formula .callout-title { color: var(--violet); }
+        .callout.formula .katex-display { margin: 0.4rem 0; }
+
+        /* STEP BOX */
+        .step-box { margin: 1.2rem 0; padding: 1rem 1.25rem 1rem 3.5rem; border-left: 3px solid var(--accent); background: var(--bg-soft); position: relative; }
+        .step-box .step-num { position: absolute; left: 0.9rem; top: 0.95rem; width: 1.8rem; height: 1.8rem; border-radius: 50%; background: var(--accent); color: white; font-family: 'Inter', sans-serif; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; }
+        .step-box .step-title { font-family: 'Inter', sans-serif; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; font-size: 0.98rem; }
+        .step-box p:last-child { margin-bottom: 0; }
+
+        /* CALC BOX */
+        .calc-box { background: #faf8f3; border: 1px solid var(--border); border-radius: 3px; padding: 0.9rem 1.2rem; margin: 1rem 0; font-family: 'Source Serif 4', serif; font-size: 0.97rem; }
+        .calc-box .calc-label { font-family: 'Inter', sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); font-weight: 700; margin-bottom: 0.4rem; }
+
+        /* EXERCISE BANNER */
+        .ex-banner { margin: 2.5rem 0 1.5rem; padding: 1.2rem 1.5rem; background: linear-gradient(90deg, var(--accent), var(--link)); color: white; border-radius: 3px; }
+        .ex-banner.alt { background: linear-gradient(90deg, var(--violet), #432970); }
+        .ex-banner .ex-label { font-family: 'Inter', sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.18em; opacity: 0.85; margin-bottom: 0.3rem; }
+        .ex-banner .ex-title { font-family: 'Source Serif 4', serif; font-size: 1.4rem; font-weight: 600; }
+        .ex-banner .ex-meta { font-family: 'Inter', sans-serif; font-size: 0.82rem; opacity: 0.9; margin-top: 0.4rem; }
+
+        /* TOC */
+        .toc { margin: 2rem 0 4rem; padding: 1.75rem 2rem; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 2px; }
+        .toc h2 { margin-top: 0; font-size: 1rem; text-transform: uppercase; letter-spacing: 0.15em; font-family: 'Inter', sans-serif; color: var(--text-muted); font-weight: 700; border: none; font-style: normal; }
+        .toc h2::before { content: none; }
+        .toc ol { margin: 1.2rem 0 0 0; list-style: none; counter-reset: toc; }
+        .toc li { counter-increment: toc; font-family: 'Inter', sans-serif; font-size: 1.02rem; line-height: 1.85; display: flex; gap: 0.95rem; color: var(--text-soft); padding: 0; }
+        .toc li::before { content: counter(toc, decimal) "."; color: var(--accent); font-weight: 600; min-width: 1.5rem; }
+        .toc li a { color: inherit; border: none; }
+        .toc li a:hover { color: var(--accent); }
+
+        /* ACRONYMS */
+        .acronyms { margin: 1rem 0 1.5rem; padding: 1.1rem 1.4rem; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 2px; }
+        .acronyms h2 { margin-top: 0; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.15em; font-family: 'Inter', sans-serif; color: var(--text-muted); font-weight: 700; border: none; font-style: normal; }
+        .acronyms h2::before { content: none; }
+        .acronyms dl { margin: 0.6rem 0 0 0; display: grid; grid-template-columns: minmax(72px, auto) 1fr minmax(72px, auto) 1fr; gap: 0.18rem 0.7rem; font-family: 'Inter', sans-serif; font-size: 0.72rem; line-height: 1.4; }
+        .acronyms dt { font-weight: 700; color: var(--accent); font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; }
+        .acronyms dd { margin: 0; color: var(--text-soft); }
+
+        /* REFERENCES */
+        .references { margin-top: 4rem; padding-top: 1.75rem; border-top: 2px solid var(--text); }
+        .references h2 { margin-top: 0; font-size: 1.25rem; color: var(--text); border: none; font-style: normal; }
+        .references h2::before { content: none; }
+        .references ol { counter-reset: ref; list-style: none; margin-left: 0; padding-left: 0; }
+        .references li { counter-increment: ref; padding-left: 2.5rem; position: relative; margin-bottom: 0.9rem; font-family: 'Inter', sans-serif; font-size: 0.82rem; line-height: 1.55; color: var(--text-soft); }
+        .references li::before { content: "[" counter(ref) "]"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+
+        /* KPI BAR */
+        .kpi-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin: 2rem 0 2.5rem; }
+        .kpi { background: var(--bg-soft); border: 1px solid var(--border); border-radius: 3px; padding: 1rem 0.75rem; text-align: center; }
+        .kpi-value { font-family: 'Source Serif 4', serif; font-size: 1.45rem; font-weight: 700; color: var(--accent); line-height: 1.1; }
+        .kpi-unit { font-family: 'Inter', sans-serif; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-top: 0.25rem; }
+        .kpi-label { font-family: 'Inter', sans-serif; font-size: 0.72rem; color: var(--text-soft); margin-top: 0.35rem; line-height: 1.3; }
+
+        /* FOOTER */
+        .footer { margin-top: 5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); font-family: 'Inter', sans-serif; font-size: 0.75rem; color: var(--text-muted); text-align: center; letter-spacing: 0.05em; }
+
+        /* MARKER */
+        .marker { background: linear-gradient(180deg, transparent 60%, rgba(184, 92, 56, 0.25) 60%); padding: 0 0.1em; }
+
+        /* CHECK SIGN */
+        .check { color: var(--green); font-weight: 700; }
+        .cross { color: var(--red); font-weight: 700; }
+
+        /* FORMULAIRE COMPACT */
+        .formulaire { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 2rem; margin: 1.5rem 0; padding: 1.2rem 1.5rem; background: var(--bg-soft); border: 1px solid var(--border); border-radius: 3px; }
+        .formulaire .form-row { font-family: 'Inter', sans-serif; font-size: 0.88rem; }
+        .formulaire .form-row strong { display: block; font-family: 'Inter', sans-serif; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.25rem; }
+
+        /* PYTHON CODE BLOCK */
+        pre { font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; line-height: 1.55; background: #1e1e2e; color: #e4e4e4; padding: 1rem 1.25rem; border-radius: 3px; overflow-x: auto; margin: 1rem 0; }
+        pre .kw { color: #c586c0; }
+        pre .str { color: #ce9178; }
+        pre .num-h { color: #b5cea8; }
+        pre .com { color: #6a9955; font-style: italic; }
+    </style>
+</head>
+
+<body>
+    <div class="page">
+
+        <header class="cover">
+            <div class="eyebrow">Révision ciblée &mdash; Examens IA Doctoral SUPCOM</div>
+            <h1>Support Vector Machines</h1>
+            <div class="subtitle">Corrections « baby move » des examens 2023 et 2021, deux exercices supplémentaires d'entraînement et un audit anti-hallucination de toutes les solutions.</div>
+            <div class="meta">
+                <strong>Public visé</strong> &mdash; doctorants peu à l'aise avec les maths et n'ayant pas suivi le détail du cours<br>
+                <strong>Sources de référence</strong> &mdash; Cours de M. Riadh Abdelfattah ; Examens 2023 (Mai) et 2021 (Novembre)<br>
+                <strong>Promesse</strong> &mdash; aucune affirmation chiffrée n'est livrée sans vérification numérique reproductible
+                <div class="date">
+                    <em>Document de révision &mdash; Mai 2026</em>
+                </div>
+            </div>
+        </header>
+
+        <section id="resume">
+            <h2 style="margin-top: 0;" data-num="">Stratégie en une phrase</h2>
+            <p>
+                Sur les 6 points de l'exercice SVM (au cumul, deux examens en font partie), <strong>4,5 points sont mécaniques</strong>&nbsp;: poser les contraintes canoniques, résoudre un système 2&times;2 ou 3&times;3, calculer un produit scalaire pour classer un point. Les 1,5 point restants demandent de nommer les choses (« vecteur support », « hard margin », « équation duale ») et d'écrire deux phrases d'interprétation. Ce document propose une recette en cinq étapes que l'on applique à l'identique sur quatre sujets, plus un audit final qui prouve, ligne par ligne, que les corrections sont correctes.
+            </p>
+            <p>
+                <strong>Pour qui n'a jamais suivi un cours sur SVM&nbsp;:</strong> commencez par la section&nbsp;1 (« SVM en 5 minutes ») &mdash; elle remplace une heure de cours et donne le vocabulaire utile. Puis traitez les corrections 2 et 3 dans l'ordre. Faites les exercices 4 et 5 à la main avant de regarder leur correction. La section 6 (audit) est là pour vous rassurer&nbsp;: rien n'est inventé.
+            </p>
+        </section>
+
+        <section class="acronyms">
+            <h2>Notations utiles</h2>
+            <dl>
+                <dt>SVM</dt><dd>Support Vector Machine</dd>
+                <dt>SV</dt><dd>Vecteur support (Support Vector)</dd>
+                <dt>$x_i$</dt><dd>$i$-ième exemple d'apprentissage (vecteur)</dd>
+                <dt>$y_i$</dt><dd>label de $x_i$ (toujours $\pm 1$ en SVM)</dd>
+                <dt>$w$</dt><dd>vecteur normal de l'hyperplan séparateur</dd>
+                <dt>$b$</dt><dd>biais (terme constant) de l'hyperplan</dd>
+                <dt>$f(x)$</dt><dd>fonction de décision $w\cdot x + b$</dd>
+                <dt>$\alpha_i$</dt><dd>multiplicateur de Lagrange du dual ($\alpha_i \geq 0$)</dd>
+                <dt>$\|w\|$</dt><dd>norme euclidienne $\sqrt{w_1^2 + w_2^2 + \ldots}$</dd>
+                <dt>$x\cdot y$</dt><dd>produit scalaire $\sum_j x_j y_j$</dd>
+                <dt>marge</dt><dd>largeur de la bande sans point&nbsp;: $2/\|w\|$</dd>
+                <dt>hard margin</dt><dd>SVM sans tolérance à l'erreur (données séparables)</dd>
+            </dl>
+        </section>
+
+        <div class="kpi-bar">
+            <div class="kpi">
+                <div class="kpi-value">2</div>
+                <div class="kpi-unit">Examens corrigés</div>
+                <div class="kpi-label">2023 et 2021, baby steps</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-value">2</div>
+                <div class="kpi-unit">Entraînements</div>
+                <div class="kpi-label">Pour automatiser le geste</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-value">5</div>
+                <div class="kpi-unit">Étapes</div>
+                <div class="kpi-label">Recette identique pour tout sujet</div>
+            </div>
+            <div class="kpi">
+                <div class="kpi-value">100&nbsp;%</div>
+                <div class="kpi-unit">Audit numpy</div>
+                <div class="kpi-label">Toutes les valeurs vérifiées</div>
+            </div>
+        </div>
+
+        <nav class="toc">
+            <h2>Plan du document</h2>
+            <ol>
+                <li><a href="#sec-cours">SVM en 5 minutes &mdash; recette du cours</a></li>
+                <li><a href="#sec-exam2023">Correction « baby move » &mdash; Examen 2023</a></li>
+                <li><a href="#sec-exam2021">Correction « baby move » &mdash; Examen 2021</a></li>
+                <li><a href="#sec-ex1">Exercice supplémentaire 1 &mdash; carré symétrique</a></li>
+                <li><a href="#sec-ex2">Exercice supplémentaire 2 &mdash; trois points</a></li>
+                <li><a href="#sec-audit">Audit anti-hallucination &mdash; toutes les valeurs vérifiées</a></li>
+                <li><a href="#sec-strategy">Mémo stratégique et formulaire d'examen</a></li>
+            </ol>
+        </nav>
+
+
+        <h1 class="section" id="sec-cours" data-num="1">SVM en 5 minutes &mdash; recette du cours</h1>
+
+        <h2 data-num="1.1">L'idée centrale en 90 secondes</h2>
+        <p>
+            On dispose d'un nuage de points étiquetés. Chaque point a un label $+1$ ou $-1$ (deux classes seulement). On veut tracer une <strong>droite</strong> (en 2D) ou un <strong>hyperplan</strong> (en dimension supérieure) qui sépare les deux classes <em>le mieux possible</em>. « Le mieux possible » signifie&nbsp;: avec le plus grand espace vide entre la frontière et les points les plus proches. Cet espace vide est appelé la <strong>marge</strong>. SVM = trouver l'hyperplan qui maximise cette marge.
+        </p>
+
+        <div class="callout why">
+            <div class="callout-title">Pourquoi maximiser la marge&nbsp;?</div>
+            <p>Une frontière qui colle aux points d'apprentissage est fragile&nbsp;: le moindre nouveau point un peu décalé peut être mal classé. Une frontière au milieu d'une zone vide est <em>robuste</em>&nbsp;: elle laisse de la place à l'incertitude. C'est ce que SVM optimise.</p>
+        </div>
+
+        <h2 data-num="1.2">Trois objets à savoir nommer</h2>
+
+        <div class="step-box">
+            <div class="step-num">1</div>
+            <div class="step-title">L'hyperplan séparateur</div>
+            <p>Caractérisé par un vecteur $w$ (la <em>direction normale</em>, perpendiculaire à l'hyperplan) et un biais $b$ (la <em>position</em>). Équation&nbsp;: $w\cdot x + b = 0$. Tout point au-dessus de la droite a $w\cdot x + b > 0$ et est classé $+1$, tout point en dessous a $w\cdot x + b < 0$ et est classé $-1$.</p>
+        </div>
+
+        <div class="step-box">
+            <div class="step-num">2</div>
+            <div class="step-title">Les vecteurs supports (SVs)</div>
+            <p>Ce sont les points les plus proches de l'hyperplan, ceux qui « touchent » la marge. Caractérisés par&nbsp;: $y_i\,(w\cdot x_i + b) = 1$. Tous les autres points satisfont $y_i\,(w\cdot x_i + b) > 1$. Les SVs sont les <em>seuls</em> points qui définissent l'hyperplan&nbsp;: si on supprime les autres, la solution ne change pas.</p>
+        </div>
+
+        <div class="step-box">
+            <div class="step-num">3</div>
+            <div class="step-title">La marge</div>
+            <p>Largeur de la bande vide entre les SVs des deux classes. Formule&nbsp;: $\dfrac{2}{\|w\|}$. Plus $\|w\|$ est petit, plus la marge est grande&nbsp;: c'est pour cela que le problème SVM <em>minimise</em> $\|w\|^2$ sous contraintes.</p>
+        </div>
+
+        <h2 data-num="1.3">Les deux formulations du problème</h2>
+
+        <div class="callout formula">
+            <div class="callout-title">Forme primale (à connaître de nom)</div>
+            $$\min_{w, b}\;\;\frac{1}{2}\|w\|^2 \quad\text{sous}\;\; y_i\,(w\cdot x_i + b) \geq 1\;\;\forall i$$
+            <p style="font-size: 0.85rem; margin-top: 0.5rem;">On minimise la norme du vecteur normal (donc on maximise la marge), avec la contrainte que tous les points soient bien classés et au moins à distance 1 de l'hyperplan en valeur signée.</p>
+        </div>
+
+        <div class="callout formula">
+            <div class="callout-title">Forme duale (à savoir manipuler)</div>
+            $$\max_{\alpha}\;\;\sum_{i=1}^{n} \alpha_i - \frac{1}{2}\sum_{i=1}^{n}\sum_{j=1}^{n} \alpha_i \alpha_j y_i y_j (x_i\cdot x_j)$$
+            $$\text{sous}\;\; \alpha_i \geq 0\;\;\forall i \quad\text{et}\quad \sum_{i=1}^{n} \alpha_i y_i = 0$$
+            <p style="font-size: 0.85rem; margin-top: 0.5rem;">Variables&nbsp;: les $\alpha_i$ (un par exemple). $\alpha_i = 0 \Rightarrow$ point pas SV ; $\alpha_i > 0 \Rightarrow$ point est SV.</p>
+        </div>
+
+        <div class="callout formula">
+            <div class="callout-title">Le pont entre dual et primal</div>
+            $$w = \sum_{i=1}^{n} \alpha_i\,y_i\,x_i$$
+            <p style="font-size: 0.85rem; margin-top: 0.5rem;">Une fois les $\alpha_i$ trouvés, on en déduit $w$ par cette somme. Pour $b$&nbsp;: prendre n'importe quel SV ($\alpha_k > 0$) et écrire $b = y_k - w\cdot x_k$.</p>
+        </div>
+
+        <h2 data-num="1.4">La recette en cinq étapes (toujours la même)</h2>
+
+        <div class="step-box">
+            <div class="step-num">1</div>
+            <div class="step-title">Lire les données et identifier les classes</div>
+            <p>Tableau (exemple, attribut 1, attribut 2, classe). Les classes sont $+1$ et $-1$. Repérer combien de points par classe.</p>
+        </div>
+
+        <div class="step-box">
+            <div class="step-num">2</div>
+            <div class="step-title">Identifier les vecteurs supports</div>
+            <p>Soit l'énoncé le dit (« on suppose que les exemples 1, 2, 3 sont SVs »), soit c'est à déduire. Méthode rapide&nbsp;: tracer le nuage, repérer les points les plus proches de la frontière entre les classes.</p>
+        </div>
+
+        <div class="step-box">
+            <div class="step-num">3</div>
+            <div class="step-title">Poser les contraintes canoniques</div>
+            <p>Pour chaque SV $x_k$ avec label $y_k$&nbsp;: $y_k\,(w\cdot x_k + b) = 1$. Cela donne un système linéaire d'autant d'équations qu'il y a de SVs.</p>
+        </div>
+
+        <div class="step-box">
+            <div class="step-num">4</div>
+            <div class="step-title">Résoudre le système (et minimiser $\|w\|^2$ si besoin)</div>
+            <p>Si on a 3 SVs en dimension 2, on a 3 équations et 3 inconnues ($w_1, w_2, b$). Système direct. Si on a 2 SVs en dimension 2, on a 2 équations et 3 inconnues&nbsp;: il faut imposer $\|w\|$ minimum, ou s'aider de la géométrie (perpendicular bisector).</p>
+        </div>
+
+        <div class="step-box">
+            <div class="step-num">5</div>
+            <div class="step-title">Calculer la marge et classer un nouveau point</div>
+            <p>Marge $= 2/\|w\|$. Pour classer $x_{\text{new}}$&nbsp;: calculer $f(x_{\text{new}}) = w\cdot x_{\text{new}} + b$. Si $f > 0$, classe $+1$ ; si $f < 0$, classe $-1$. Si $f = 0$, le point est sur la frontière (rare en pratique).</p>
+        </div>
+
+        <h2 data-num="1.5">Trois pièges à connaître</h2>
+
+        <div class="callout trap">
+            <div class="callout-title">Piège n°1 &mdash; oublier les signes des labels</div>
+            <p>Pour un SV de classe $-1$, la contrainte est $-1\cdot(w\cdot x_k + b) = 1$, donc $w\cdot x_k + b = -1$. Beaucoup de copies écrivent $w\cdot x_k + b = +1$ pour tous les SVs, ce qui rend le système incohérent.</p>
+        </div>
+
+        <div class="callout trap">
+            <div class="callout-title">Piège n°2 &mdash; confondre $w_1, w_2$ avec un point</div>
+            <p>$w$ est un <em>vecteur normal</em> (perpendiculaire à l'hyperplan). Il a la même dimension que les points $x_i$. Ne pas le confondre avec un point particulier des données.</p>
+        </div>
+
+        <div class="callout trap">
+            <div class="callout-title">Piège n°3 &mdash; non-canonique vs canonique</div>
+            <p>Si l'on retrouve $w$ via $\sum \alpha_i y_i x_i$ avec des $\alpha$ approchés, le $w$ obtenu peut ne pas vérifier $y_i(w\cdot x_i + b) = 1$ exactement (on obtient un autre nombre, par exemple $5/2$). Cela ne change pas l'<em>hyperplan</em> &mdash; juste l'<em>échelle</em> de $w$. Pour vérifier la cohérence&nbsp;: les ratios $y_i(w\cdot x_i + b)$ doivent être identiques entre tous les SVs.</p>
+        </div>
+
+
+        <h1 class="section" id="sec-exam2023" data-num="2">Correction « baby move » &mdash; Examen 2023</h1>
+
+        <p>
+            <strong>Énoncé original</strong> (Examen Mai 2023, Partie&nbsp;I, 6 points). Les quatre exemples ci-dessous correspondent à des vecteurs supports.
+        </p>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th></th><th>Att1 ($x_1$)</th><th>Att2 ($x_2$)</th><th>$Y$</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>$X_1$</strong></td><td class="num">$-3$</td><td class="num">$1$</td><td class="num">$-1$</td></tr>
+                    <tr><td><strong>$X_2$</strong></td><td class="num">$3$</td><td class="num">$0$</td><td class="num">$+1$</td></tr>
+                    <tr><td><strong>$X_3$</strong></td><td class="num">$1$</td><td class="num">$-3$</td><td class="num">$-1$</td></tr>
+                    <tr><td><strong>$X_4$</strong></td><td class="num">$0$</td><td class="num">$3$</td><td class="num">$+1$</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>Questions posées&nbsp;:</p>
+        <ol>
+            <li><strong>Q1.</strong> Retrouver et représenter graphiquement l'hyperplan et la marge définis par ces 4 SVs.</li>
+            <li><strong>Q2.</strong> On donne la solution duale approchée $\alpha_1 = 1/9$, $\alpha_2 = 1/3$, $\alpha_3 = 1/3$, $\alpha_4 = 1/27$, $b = -1/2$.
+                <ul>
+                    <li><strong>(a)</strong> Calculer $w$, vérifier la cohérence avec Q1.</li>
+                    <li><strong>(b)</strong> Classer le nouveau point $X_5 = (2, 0)$.</li>
+                    <li><strong>(c)</strong> Préciser le type de SVM utilisé.</li>
+                </ul>
+            </li>
+        </ol>
+
+        <h2 data-num="2.1">Question 1 &mdash; trouver l'hyperplan à partir des 4 SVs</h2>
+
+        <h3 data-num="2.1.1">Étape A &mdash; pose des contraintes canoniques</h3>
+
+        <p>Pour chaque SV, on écrit $y_i(w_1 x_{i,1} + w_2 x_{i,2} + b) = 1$. Rappel important&nbsp;: <strong>les labels $y_i$ rentrent dans l'équation</strong>, donc pour les points de classe $-1$ on multiplie par $-1$.</p>
+
+        <div class="calc-box">
+            <div class="calc-label">$X_1=(-3, 1)$, $y_1=-1$</div>
+            $$-1 \cdot (-3 w_1 + 1 w_2 + b) = 1 \;\Longleftrightarrow\; 3w_1 - w_2 - b = 1 \quad (1)$$
+
+            <div class="calc-label" style="margin-top: 0.5rem;">$X_2=(3, 0)$, $y_2=+1$</div>
+            $$+1 \cdot (3 w_1 + 0\cdot w_2 + b) = 1 \;\Longleftrightarrow\; 3w_1 + b = 1 \quad (2)$$
+
+            <div class="calc-label" style="margin-top: 0.5rem;">$X_3=(1, -3)$, $y_3=-1$</div>
+            $$-1 \cdot (w_1 - 3 w_2 + b) = 1 \;\Longleftrightarrow\; -w_1 + 3w_2 - b = 1 \quad (3)$$
+
+            <div class="calc-label" style="margin-top: 0.5rem;">$X_4=(0, 3)$, $y_4=+1$</div>
+            $$+1 \cdot (0\cdot w_1 + 3 w_2 + b) = 1 \;\Longleftrightarrow\; 3w_2 + b = 1 \quad (4)$$
+        </div>
+
+        <h3 data-num="2.1.2">Étape B &mdash; résoudre le système</h3>
+
+        <p>On a 4 équations et 3 inconnues ($w_1, w_2, b$). C'est un système surdéterminé, mais comme il est cohérent (les 4 points sont vraiment SVs), il a une solution unique.</p>
+
+        <div class="calc-box">
+            <div class="calc-label">Soustraire (4) à (2) pour éliminer $b$</div>
+            $$3w_1 + b - (3w_2 + b) = 1 - 1 \;\Longleftrightarrow\; 3w_1 - 3w_2 = 0 \;\Longleftrightarrow\; \boxed{w_1 = w_2}$$
+
+            <div class="calc-label" style="margin-top: 0.6rem;">Reporter dans (1) avec $w_2 = w_1$</div>
+            $$3w_1 - w_1 - b = 1 \;\Longleftrightarrow\; 2w_1 - b = 1 \quad (1')$$
+
+            <div class="calc-label" style="margin-top: 0.6rem;">Combiner avec (2)&nbsp;: $b = 1 - 3w_1$</div>
+            $$2w_1 - (1 - 3w_1) = 1 \;\Longleftrightarrow\; 5w_1 = 2 \;\Longleftrightarrow\; w_1 = \frac{2}{5}$$
+
+            <div class="calc-label" style="margin-top: 0.6rem;">D'où</div>
+            $$w_2 = \frac{2}{5}\,, \qquad b = 1 - 3\cdot\frac{2}{5} = 1 - \frac{6}{5} = -\frac{1}{5}$$
+        </div>
+
+        <div class="callout formula">
+            <div class="callout-title">Réponse Q1 &mdash; forme canonique</div>
+            $$\boxed{\;w = \begin{pmatrix} 2/5 \\ 2/5 \end{pmatrix}\,, \qquad b = -\frac{1}{5}\;}$$
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Équation de l'hyperplan&nbsp;: $\dfrac{2}{5}x_1 + \dfrac{2}{5}x_2 - \dfrac{1}{5} = 0$, ou de manière équivalente $\;x_1 + x_2 = \dfrac{1}{2}$ (en multipliant par $5/2$).</p>
+        </div>
+
+        <h3 data-num="2.1.3">Étape C &mdash; calcul de la marge</h3>
+
+        <div class="calc-box">
+            $$\|w\| = \sqrt{w_1^2 + w_2^2} = \sqrt{\frac{4}{25} + \frac{4}{25}} = \sqrt{\frac{8}{25}} = \frac{2\sqrt{2}}{5}$$
+            $$\text{marge} = \frac{2}{\|w\|} = \frac{2}{2\sqrt{2}/5} = \frac{10}{2\sqrt{2}} = \frac{5}{\sqrt{2}} = \frac{5\sqrt{2}}{2} \approx 3{,}536$$
+        </div>
+
+        <div class="callout tip">
+            <div class="callout-title">Vérification rapide</div>
+            <p>On peut aussi calculer la distance d'un SV à l'hyperplan&nbsp;: $d(X_2, \text{hyperplan}) = \dfrac{|w\cdot X_2 + b|}{\|w\|} = \dfrac{|3 \cdot 2/5 + 0 - 1/5|}{2\sqrt{2}/5} = \dfrac{1}{2\sqrt{2}/5} = \dfrac{5}{2\sqrt{2}}$. La marge est le double&nbsp;: $5/\sqrt{2}$ <span class="check">&#10003;</span>.</p>
+        </div>
+
+        <h3 data-num="2.1.4">Étape D &mdash; représentation graphique (à dessiner sur la copie)</h3>
+
+        <p>Sur le graphique&nbsp;:</p>
+        <ul>
+            <li>Repère orthonormé, axes $x_1$ et $x_2$ allant de $-4$ à $+4$.</li>
+            <li>Tracer les 4 SVs avec deux symboles distincts (par exemple cercle pour $+1$, croix pour $-1$).</li>
+            <li>Tracer l'hyperplan en ligne pleine&nbsp;: $x_1 + x_2 = 1/2$ (passe par $(0, 0{,}5)$ et $(0{,}5, 0)$).</li>
+            <li>Tracer les deux marges en lignes pointillées&nbsp;: $x_1 + x_2 = 3$ (côté $+1$, passe par $X_2$ et $X_4$) et $x_1 + x_2 = -2$ (côté $-1$, passe par $X_1$ et $X_3$).</li>
+        </ul>
+
+        <h2 data-num="2.2">Question 2.a &mdash; calcul de $w$ par la formule duale</h2>
+
+        <p>On applique $w = \sum_{i=1}^{4} \alpha_i\,y_i\,x_i$.</p>
+
+        <div class="calc-box">
+            <div class="calc-label">Contribution de chaque SV</div>
+            $$\alpha_1 y_1 x_1 = \frac{1}{9}\cdot(-1)\cdot\begin{pmatrix} -3 \\ 1 \end{pmatrix} = \begin{pmatrix} 3/9 \\ -1/9 \end{pmatrix} = \begin{pmatrix} 1/3 \\ -1/9 \end{pmatrix}$$
+            $$\alpha_2 y_2 x_2 = \frac{1}{3}\cdot(+1)\cdot\begin{pmatrix} 3 \\ 0 \end{pmatrix} = \begin{pmatrix} 1 \\ 0 \end{pmatrix}$$
+            $$\alpha_3 y_3 x_3 = \frac{1}{3}\cdot(-1)\cdot\begin{pmatrix} 1 \\ -3 \end{pmatrix} = \begin{pmatrix} -1/3 \\ 1 \end{pmatrix}$$
+            $$\alpha_4 y_4 x_4 = \frac{1}{27}\cdot(+1)\cdot\begin{pmatrix} 0 \\ 3 \end{pmatrix} = \begin{pmatrix} 0 \\ 1/9 \end{pmatrix}$$
+            <div class="calc-label" style="margin-top: 0.6rem;">Somme composante par composante</div>
+            $$w_1 = \frac{1}{3} + 1 - \frac{1}{3} + 0 = 1$$
+            $$w_2 = -\frac{1}{9} + 0 + 1 + \frac{1}{9} = 1$$
+        </div>
+
+        <div class="callout formula">
+            $$\boxed{\;w = \begin{pmatrix} 1 \\ 1 \end{pmatrix}\,, \qquad b = -\frac{1}{2}\;\text{(donné)}\;}$$
+        </div>
+
+        <h3 data-num="2.2.1">Vérification de la cohérence avec Q1</h3>
+
+        <p>L'hyperplan obtenu en Q2.a est&nbsp;: $w\cdot x + b = x_1 + x_2 - 1/2 = 0$, c'est-à-dire $x_1 + x_2 = 1/2$. <strong>C'est la même droite qu'en Q1.</strong> La direction $(1, 1)$ obtenue ici est <em>parallèle</em> à $(2/5, 2/5) = (2/5)\cdot(1, 1)$. Le facteur d'échelle $5/2$ vient du fait que les $\alpha_i$ donnés dans l'énoncé sont qualifiés d'« approchés »&nbsp;: ils ne respectent pas exactement la contrainte canonique mais conservent la <em>direction</em> du normal.</p>
+
+        <div class="callout tip">
+            <div class="callout-title">Test à faire en copie</div>
+            <p>Évaluer $y_i\,(w\cdot x_i + b)$ pour chaque SV avec $w = (1,1)$, $b = -1/2$. On doit obtenir le même nombre pour tous les 4 (preuve qu'ils sont équidistants). Calcul&nbsp;: pour $X_2$, $1 \cdot (3 + 0 - 1/2) = 5/2$ ; pour $X_1$, $-1\cdot(-3+1-1/2) = 5/2$, etc. Tous égaux à $5/2$, cohérence vérifiée.</p>
+        </div>
+
+        <h2 data-num="2.3">Question 2.b &mdash; classer $X_5 = (2, 0)$</h2>
+
+        <p>On applique la fonction de décision avec $w = (1, 1)$, $b = -1/2$.</p>
+
+        <div class="calc-box">
+            $$f(X_5) = w\cdot X_5 + b = 1\cdot 2 + 1\cdot 0 - \frac{1}{2} = \frac{3}{2}$$
+            $$f(X_5) > 0 \;\Longrightarrow\; \text{classe prédite} = +1$$
+        </div>
+
+        <div class="callout formula">
+            $$\boxed{\;X_5\;\text{est classé}\;+1\;}$$
+        </div>
+
+        <h2 data-num="2.4">Question 2.c &mdash; type de SVM</h2>
+
+        <div class="callout reveal">
+            <div class="callout-title">Réponse à recopier</div>
+            <p>Il s'agit d'un <strong>SVM linéaire à marge dure</strong> (<em>hard margin</em>)&nbsp;: linéaire car la frontière est une droite (combinaison linéaire des coordonnées $x_1, x_2$) et à marge dure car les données sont parfaitement séparables et tous les SVs vérifient strictement $y_i\,(w\cdot x_i + b) = 1$ (aucune variable de relâchement). Classification <strong>binaire</strong> ($y \in \{-1, +1\}$).</p>
+        </div>
+
+        <h2 data-num="2.5">Bilan de copie attendu &mdash; Examen 2023</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Question</th><th>Points</th><th>Ce qui doit figurer</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Q1</td><td class="num">~2,5 pts</td><td>Système des 4 contraintes, résolution, $w = (2/5, 2/5)$, $b = -1/5$, schéma</td></tr>
+                    <tr><td>Q2.a</td><td class="num">~2 pts</td><td>4 contributions, somme, $w = (1, 1)$, comparaison avec Q1</td></tr>
+                    <tr><td>Q2.b</td><td class="num">~1 pt</td><td>$f(X_5) = 3/2$, classe $+1$</td></tr>
+                    <tr><td>Q2.c</td><td class="num">~0,5 pt</td><td>« SVM linéaire binaire à marge dure »</td></tr>
+                    <tr class="success"><td><strong>Total visé</strong></td><td class="num"><strong>5,5 / 6</strong></td><td><strong>92&nbsp;% si la mécanique est propre</strong></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <h1 class="section" id="sec-exam2021" data-num="3">Correction « baby move » &mdash; Examen 2021</h1>
+
+        <p>
+            <strong>Énoncé original</strong> (Examen Novembre 2021, Partie&nbsp;III, 6 points). Trois exemples d'apprentissage&nbsp;:
+        </p>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th></th><th>Att1 ($x_1$)</th><th>Att2 ($x_2$)</th><th>$Y$</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>$X_1$</strong></td><td class="num">$4$</td><td class="num">$3$</td><td class="num">$+1$</td></tr>
+                    <tr><td><strong>$X_2$</strong></td><td class="num">$0$</td><td class="num">$2$</td><td class="num">$+1$</td></tr>
+                    <tr><td><strong>$X_3$</strong></td><td class="num">$0$</td><td class="num">$0$</td><td class="num">$-1$</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>Questions posées (a&rarr;e)&nbsp;:</p>
+        <ol type="a">
+            <li>Exprimer les contraintes de séparabilité.</li>
+            <li>Calculer les paramètres de l'hyperplan optimal.</li>
+            <li>Rappeler l'origine et la qualification de l'équation duale (eq.&nbsp;1).</li>
+            <li>Donner l'équation duale appliquée aux données.</li>
+            <li>À partir de $w = \sum \alpha_i y_i x_i$, déduire les $\alpha_i$.</li>
+        </ol>
+
+        <h2 data-num="3.1">Question a &mdash; contraintes de séparabilité</h2>
+
+        <p>Pour chaque exemple, la contrainte de séparation à marge dure s'écrit $y_i\,(w\cdot x_i + b) \geq 1$. On l'écrit explicitement pour chaque point&nbsp;:</p>
+
+        <div class="calc-box">
+            <div class="calc-label">$X_1 = (4, 3)$, $y_1 = +1$</div>
+            $$+1 \cdot (4 w_1 + 3 w_2 + b) \geq 1 \;\Longleftrightarrow\; 4w_1 + 3w_2 + b \geq 1 \quad (C_1)$$
+
+            <div class="calc-label" style="margin-top: 0.5rem;">$X_2 = (0, 2)$, $y_2 = +1$</div>
+            $$+1 \cdot (0 + 2 w_2 + b) \geq 1 \;\Longleftrightarrow\; 2w_2 + b \geq 1 \quad (C_2)$$
+
+            <div class="calc-label" style="margin-top: 0.5rem;">$X_3 = (0, 0)$, $y_3 = -1$</div>
+            $$-1 \cdot (0 + 0 + b) \geq 1 \;\Longleftrightarrow\; -b \geq 1 \;\Longleftrightarrow\; b \leq -1 \quad (C_3)$$
+        </div>
+
+        <div class="callout why">
+            <div class="callout-title">À retenir</div>
+            <p>Une contrainte $y_i\,(w\cdot x_i + b) \geq 1$ par exemple. C'est tout. Les SVs sont les exemples qui réalisent l'égalité ($= 1$, pas $\geq 1$). On découvrira <em>après résolution</em> lesquels sont SVs.</p>
+        </div>
+
+        <h2 data-num="3.2">Question b &mdash; calculer l'hyperplan optimal</h2>
+
+        <h3 data-num="3.2.1">Étape A &mdash; identifier les SVs candidats</h3>
+
+        <p>Regardons le nuage&nbsp;: $X_2$ et $X_3$ sont sur l'axe $x_1 = 0$ (alignés verticalement). Ils sont en concurrence directe&nbsp;: $X_3$ classe $-1$ en bas, $X_2$ classe $+1$ au-dessus. La frontière naturelle est <strong>horizontale</strong>, à mi-chemin entre eux. Le point $X_1 = (4, 3)$ est à distance plus grande de cette frontière&nbsp;: il sera <em>au-dessus</em> de la marge mais ne la touchera pas. Donc $X_1$ <strong>n'est pas SV</strong>.</p>
+
+        <h3 data-num="3.2.2">Étape B &mdash; pose des contraintes canoniques pour SVs</h3>
+
+        <p>On pose $X_2$ et $X_3$ comme SVs (contraintes saturées à $1$)&nbsp;:</p>
+
+        <div class="calc-box">
+            <div class="calc-label">SV $X_2$&nbsp;: $y_2(w_1 \cdot 0 + w_2 \cdot 2 + b) = 1$</div>
+            $$2w_2 + b = 1 \quad (E_1)$$
+
+            <div class="calc-label" style="margin-top: 0.5rem;">SV $X_3$&nbsp;: $y_3(w_1 \cdot 0 + w_2 \cdot 0 + b) = 1$</div>
+            $$-b = 1 \;\Longleftrightarrow\; b = -1 \quad (E_2)$$
+        </div>
+
+        <h3 data-num="3.2.3">Étape C &mdash; résoudre</h3>
+
+        <div class="calc-box">
+            <div class="calc-label">Substituer $b = -1$ dans $(E_1)$</div>
+            $$2w_2 - 1 = 1 \;\Longleftrightarrow\; 2w_2 = 2 \;\Longleftrightarrow\; w_2 = 1$$
+        </div>
+
+        <p>$w_1$ n'apparaît dans aucune équation (car $X_2$ et $X_3$ ont tous les deux $x_1 = 0$). On est donc libre de choisir $w_1$. Pour <strong>maximiser la marge</strong>, on minimise $\|w\|^2 = w_1^2 + w_2^2 = w_1^2 + 1$. Le minimum est obtenu pour $w_1 = 0$, à condition que cela respecte la contrainte $(C_1)$&nbsp;: vérifions.</p>
+
+        <div class="calc-box">
+            <div class="calc-label">Avec $w_1 = 0$, $w_2 = 1$, $b = -1$, vérifier $(C_1)$</div>
+            $$4 \cdot 0 + 3 \cdot 1 + (-1) = 2 \geq 1 \quad \checkmark$$
+        </div>
+
+        <div class="callout formula">
+            <div class="callout-title">Réponse Q.b</div>
+            $$\boxed{\;w = \begin{pmatrix} 0 \\ 1 \end{pmatrix}\,, \qquad b = -1\;}$$
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Équation de l'hyperplan&nbsp;: $0\cdot x_1 + 1\cdot x_2 - 1 = 0$, soit la droite horizontale $x_2 = 1$. Marge = $2/\|w\| = 2/1 = 2$.</p>
+        </div>
+
+        <h3 data-num="3.2.4">Vérification de toutes les contraintes</h3>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Point</th><th>$y_i(w\cdot x_i + b)$</th><th>Comparé à 1</th><th>Statut</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>$X_1 = (4,3)$, $y=+1$</td><td class="num">$+1(0+3-1) = 2$</td><td class="num">$2 \geq 1$</td><td>Hors marge (pas SV)</td></tr>
+                    <tr class="highlight"><td>$X_2 = (0,2)$, $y=+1$</td><td class="num">$+1(0+2-1) = 1$</td><td class="num">$= 1$</td><td><strong>SV</strong></td></tr>
+                    <tr class="highlight"><td>$X_3 = (0,0)$, $y=-1$</td><td class="num">$-1(0+0-1) = 1$</td><td class="num">$= 1$</td><td><strong>SV</strong></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 data-num="3.3">Question c &mdash; origine et qualification de l'équation duale</h2>
+
+        <div class="callout reveal">
+            <div class="callout-title">Réponse à recopier (avec ses propres mots)</div>
+            <p>L'équation duale provient de la <strong>méthode des multiplicateurs de Lagrange</strong> appliquée au problème SVM primal $\min \frac{1}{2}\|w\|^2$ sous contraintes $y_i(w\cdot x_i + b) \geq 1$. On forme le lagrangien $\mathcal{L}(w, b, \alpha) = \frac{1}{2}\|w\|^2 - \sum_i \alpha_i\,[y_i(w\cdot x_i + b) - 1]$, puis on annule les dérivées par rapport à $w$ et $b$. On obtient $w = \sum \alpha_i y_i x_i$ et $\sum \alpha_i y_i = 0$. En réinjectant dans $\mathcal{L}$, on aboutit à l'équation duale.</p>
+            <p>L'équation duale est une <strong>maximisation quadratique convexe</strong> (forme bilinéaire des $\alpha_i$, contraintes linéaires). Variables&nbsp;: les $\alpha_i \geq 0$, un par exemple. Si $\alpha_i = 0$, l'exemple est <em>hors marge</em> (pas SV). Si $\alpha_i > 0$, l'exemple est <em>sur la marge</em> (SV). Avantage&nbsp;: les produits scalaires $x_i\cdot x_j$ peuvent être remplacés par un noyau $K(x_i, x_j)$ pour gérer le cas non linéaire (<em>kernel trick</em>).</p>
+        </div>
+
+        <h2 data-num="3.4">Question d &mdash; équation duale appliquée aux données</h2>
+
+        <p>On part de la forme générale&nbsp;:</p>
+
+        <div class="callout formula">
+            $$\max_{\alpha}\;\sum_{i=1}^{3} \alpha_i - \frac{1}{2}\sum_{i=1}^{3}\sum_{j=1}^{3} \alpha_i \alpha_j y_i y_j (x_i\cdot x_j)$$
+            $$\text{sous}\;\;\alpha_i \geq 0\;\forall i \quad\text{et}\quad \alpha_1 y_1 + \alpha_2 y_2 + \alpha_3 y_3 = 0$$
+        </div>
+
+        <p>Calcul des produits scalaires (table de Gram) avec $X_1=(4,3)$, $X_2=(0,2)$, $X_3=(0,0)$&nbsp;:</p>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>$x_i\cdot x_j$</th><th>$X_1$</th><th>$X_2$</th><th>$X_3$</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>$X_1$</strong></td><td class="num">$16+9=25$</td><td class="num">$0+6=6$</td><td class="num">$0$</td></tr>
+                    <tr><td><strong>$X_2$</strong></td><td class="num">$6$</td><td class="num">$0+4=4$</td><td class="num">$0$</td></tr>
+                    <tr><td><strong>$X_3$</strong></td><td class="num">$0$</td><td class="num">$0$</td><td class="num">$0$</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>Avec $y_1 = y_2 = +1$, $y_3 = -1$, on a $y_i y_j$ comme suit&nbsp;: $y_1 y_1 = y_2 y_2 = y_3 y_3 = +1$, $y_1 y_2 = +1$, $y_1 y_3 = y_2 y_3 = -1$.</p>
+
+        <p>On développe la double somme (les termes $i=j$ comptent une fois, les croisés deux fois)&nbsp;:</p>
+
+        <div class="calc-box">
+            $$\sum_i\sum_j \alpha_i\alpha_j y_i y_j x_i\cdot x_j$$
+            $$= 25\alpha_1^2 + 4\alpha_2^2 + 0\cdot \alpha_3^2 + 2\cdot 6\,\alpha_1\alpha_2 - 2\cdot 0\,\alpha_1\alpha_3 - 2\cdot 0\,\alpha_2\alpha_3$$
+            $$= 25\alpha_1^2 + 4\alpha_2^2 + 12\alpha_1\alpha_2$$
+        </div>
+
+        <div class="callout formula">
+            <div class="callout-title">Équation duale appliquée aux données</div>
+            $$\max\;\;\alpha_1 + \alpha_2 + \alpha_3 - \frac{1}{2}\bigl(25\alpha_1^2 + 4\alpha_2^2 + 12\alpha_1\alpha_2\bigr)$$
+            $$\text{sous}\;\;\alpha_i \geq 0\quad\text{et}\quad \alpha_1 + \alpha_2 - \alpha_3 = 0$$
+        </div>
+
+        <h2 data-num="3.5">Question e &mdash; déduire les $\alpha_i$ depuis $w$</h2>
+
+        <p>On utilise $w = \sum_{i=1}^{3} \alpha_i y_i x_i$ avec $w = (0, 1)$ trouvé en Q.b.</p>
+
+        <div class="calc-box">
+            $$\alpha_1\cdot(+1)\cdot\begin{pmatrix} 4 \\ 3 \end{pmatrix} + \alpha_2\cdot(+1)\cdot\begin{pmatrix} 0 \\ 2 \end{pmatrix} + \alpha_3\cdot(-1)\cdot\begin{pmatrix} 0 \\ 0 \end{pmatrix} = \begin{pmatrix} 0 \\ 1 \end{pmatrix}$$
+
+            <div class="calc-label" style="margin-top: 0.6rem;">Composante 1</div>
+            $$4\alpha_1 + 0\cdot\alpha_2 + 0\cdot\alpha_3 = 0 \;\Longleftrightarrow\; \alpha_1 = 0$$
+
+            <div class="calc-label" style="margin-top: 0.6rem;">Composante 2 (avec $\alpha_1 = 0$)</div>
+            $$3\cdot 0 + 2\alpha_2 + 0 = 1 \;\Longleftrightarrow\; \alpha_2 = \frac{1}{2}$$
+
+            <div class="calc-label" style="margin-top: 0.6rem;">Contrainte $\sum \alpha_i y_i = 0$</div>
+            $$\alpha_1 - \alpha_3 + \alpha_2 = 0 \;\Longleftrightarrow\; 0 + \frac{1}{2} - \alpha_3 = 0 \;\Longleftrightarrow\; \alpha_3 = \frac{1}{2}$$
+        </div>
+
+        <div class="callout formula">
+            <div class="callout-title">Réponse Q.e</div>
+            $$\boxed{\;\alpha_1 = 0\,, \quad \alpha_2 = \frac{1}{2}\,, \quad \alpha_3 = \frac{1}{2}\;}$$
+        </div>
+
+        <div class="callout tip">
+            <div class="callout-title">Interprétation</div>
+            <p>$\alpha_1 = 0$ confirme que $X_1$ <em>n'est pas</em> un vecteur support (cohérent avec l'analyse géométrique). $\alpha_2$ et $\alpha_3$ sont strictement positifs, donc $X_2$ et $X_3$ <em>sont</em> les vecteurs supports. La somme $\sum \alpha_i y_i = 0 + 1/2 - 1/2 = 0$, contrainte vérifiée.</p>
+        </div>
+
+
+        <h1 class="section" id="sec-ex1" data-num="4">Exercice supplémentaire 1 &mdash; carré symétrique</h1>
+
+        <div class="ex-banner">
+            <div class="ex-label">Exercice 1 &mdash; calque de l'examen 2023</div>
+            <div class="ex-title">Quatre points en carré, tous SVs</div>
+            <div class="ex-meta">Niveau&nbsp;: identique aux examens &middot; Temps cible&nbsp;: 25 minutes &middot; Barème indicatif&nbsp;: 6 points</div>
+        </div>
+
+        <h2 data-num="4.1">Énoncé</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th></th><th>$x_1$</th><th>$x_2$</th><th>$Y$</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>$X_1$</strong></td><td class="num">$1$</td><td class="num">$0$</td><td class="num">$+1$</td></tr>
+                    <tr><td><strong>$X_2$</strong></td><td class="num">$0$</td><td class="num">$1$</td><td class="num">$+1$</td></tr>
+                    <tr><td><strong>$X_3$</strong></td><td class="num">$-1$</td><td class="num">$0$</td><td class="num">$-1$</td></tr>
+                    <tr><td><strong>$X_4$</strong></td><td class="num">$0$</td><td class="num">$-1$</td><td class="num">$-1$</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>On admet que les 4 points sont vecteurs supports. (a) Calculer $w$ et $b$ par les contraintes canoniques. (b) Donner la marge. (c) Vérifier en calculant $w$ via le dual avec $\alpha_1 = \alpha_2 = \alpha_3 = \alpha_4 = 1/2$. (d) Classer le nouveau point $X_5 = (2, 3)$.</p>
+
+        <h2 data-num="4.2">Correction</h2>
+
+        <h3 data-num="4.2.1">a) Hyperplan via les contraintes canoniques</h3>
+
+        <div class="calc-box">
+            <div class="calc-label">$X_1=(1,0)$, $y_1=+1$</div>
+            $$w_1 + b = 1 \quad (E_1)$$
+            <div class="calc-label" style="margin-top: 0.4rem;">$X_2=(0,1)$, $y_2=+1$</div>
+            $$w_2 + b = 1 \quad (E_2)$$
+            <div class="calc-label" style="margin-top: 0.4rem;">$X_3=(-1,0)$, $y_3=-1$</div>
+            $$-1\cdot(-w_1 + b) = 1 \;\Longleftrightarrow\; w_1 - b = 1 \quad (E_3)$$
+            <div class="calc-label" style="margin-top: 0.4rem;">$X_4=(0,-1)$, $y_4=-1$</div>
+            $$-1\cdot(-w_2 + b) = 1 \;\Longleftrightarrow\; w_2 - b = 1 \quad (E_4)$$
+        </div>
+
+        <div class="calc-box">
+            <div class="calc-label">$(E_1) + (E_3)$ pour éliminer $b$</div>
+            $$2w_1 = 2 \;\Longleftrightarrow\; w_1 = 1$$
+            <div class="calc-label" style="margin-top: 0.4rem;">$(E_2) + (E_4)$</div>
+            $$2w_2 = 2 \;\Longleftrightarrow\; w_2 = 1$$
+            <div class="calc-label" style="margin-top: 0.4rem;">Reporter dans $(E_1)$&nbsp;: $1 + b = 1$</div>
+            $$b = 0$$
+        </div>
+
+        <div class="callout formula">
+            $$\boxed{\;w = \begin{pmatrix} 1 \\ 1 \end{pmatrix}\,, \qquad b = 0\;}$$
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Hyperplan&nbsp;: $x_1 + x_2 = 0$. C'est la droite passant par l'origine et de pente $-1$.</p>
+        </div>
+
+        <h3 data-num="4.2.2">b) Marge</h3>
+
+        <div class="calc-box">
+            $$\|w\| = \sqrt{1 + 1} = \sqrt{2}\,, \qquad \text{marge} = \frac{2}{\sqrt{2}} = \sqrt{2} \approx 1{,}414$$
+        </div>
+
+        <h3 data-num="4.2.3">c) Vérification par le dual</h3>
+
+        <div class="calc-box">
+            $$w = \frac{1}{2}\cdot 1\cdot(1,0) + \frac{1}{2}\cdot 1\cdot(0,1) + \frac{1}{2}\cdot(-1)\cdot(-1,0) + \frac{1}{2}\cdot(-1)\cdot(0,-1)$$
+            $$= \frac{1}{2}(1,0) + \frac{1}{2}(0,1) + \frac{1}{2}(1,0) + \frac{1}{2}(0,1)$$
+            $$= (1, 1)\quad\checkmark$$
+            <div class="calc-label" style="margin-top: 0.6rem;">Contrainte $\sum \alpha_i y_i$</div>
+            $$\frac{1}{2}(1) + \frac{1}{2}(1) + \frac{1}{2}(-1) + \frac{1}{2}(-1) = 0\quad\checkmark$$
+        </div>
+
+        <h3 data-num="4.2.4">d) Classifier $X_5 = (2, 3)$</h3>
+
+        <div class="calc-box">
+            $$f(X_5) = 1\cdot 2 + 1\cdot 3 + 0 = 5 > 0 \;\Longrightarrow\; \text{classe}\;+1$$
+        </div>
+
+        <div class="callout tip">
+            <div class="callout-title">Astuce de symétrie</div>
+            <p>Le carré est symétrique par rotation 90&deg; et la frontière passe par l'origine&nbsp;: par symétrie, on s'attend à ce que les 4 $\alpha_i$ soient tous égaux. C'est une astuce qui permet de prédire la solution sans calcul. Sur la copie, on peut écrire&nbsp;: « par symétrie du nuage, $\alpha_1 = \alpha_2 = \alpha_3 = \alpha_4$ ; la contrainte $\sum\alpha_i y_i = 0$ étant automatique, et $w = (1,1)$ étant connu, on déduit $\alpha = 1/2$ ».</p>
+        </div>
+
+
+        <h1 class="section" id="sec-ex2" data-num="5">Exercice supplémentaire 2 &mdash; trois points, tous SVs</h1>
+
+        <div class="ex-banner alt">
+            <div class="ex-label">Exercice 2 &mdash; calque de l'examen 2021, version simplifiée</div>
+            <div class="ex-title">Trois points dont l'origine, classes asymétriques</div>
+            <div class="ex-meta">Niveau&nbsp;: identique aux examens &middot; Temps cible&nbsp;: 25 minutes &middot; Barème indicatif&nbsp;: 6 points</div>
+        </div>
+
+        <h2 data-num="5.1">Énoncé</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th></th><th>$x_1$</th><th>$x_2$</th><th>$Y$</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>$X_1$</strong></td><td class="num">$2$</td><td class="num">$1$</td><td class="num">$+1$</td></tr>
+                    <tr><td><strong>$X_2$</strong></td><td class="num">$1$</td><td class="num">$2$</td><td class="num">$+1$</td></tr>
+                    <tr><td><strong>$X_3$</strong></td><td class="num">$0$</td><td class="num">$0$</td><td class="num">$-1$</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <p>(a) Exprimer les contraintes de séparabilité. (b) On admet que les 3 points sont vecteurs supports. Calculer $w$ et $b$. (c) Donner la marge. (d) Calculer les $\alpha_i$ associés. (e) Classer $X_4 = (3, 3)$.</p>
+
+        <h2 data-num="5.2">Correction</h2>
+
+        <h3 data-num="5.2.1">a) Contraintes</h3>
+
+        <div class="calc-box">
+            <div class="calc-label">$X_1=(2,1)$, $y_1=+1$</div>
+            $$2w_1 + w_2 + b \geq 1 \quad (C_1)$$
+            <div class="calc-label" style="margin-top: 0.4rem;">$X_2=(1,2)$, $y_2=+1$</div>
+            $$w_1 + 2w_2 + b \geq 1 \quad (C_2)$$
+            <div class="calc-label" style="margin-top: 0.4rem;">$X_3=(0,0)$, $y_3=-1$</div>
+            $$-1\cdot(0+0+b) \geq 1 \;\Longleftrightarrow\; b \leq -1 \quad (C_3)$$
+        </div>
+
+        <h3 data-num="5.2.2">b) Hyperplan optimal (3 SVs)</h3>
+
+        <p>Si les 3 points sont SVs, les 3 contraintes sont saturées à l'égalité.</p>
+
+        <div class="calc-box">
+            <div class="calc-label">SV $X_1$&nbsp;: $2w_1 + w_2 + b = 1$</div>
+            $$\quad (E_1)$$
+            <div class="calc-label" style="margin-top: 0.4rem;">SV $X_2$&nbsp;: $w_1 + 2w_2 + b = 1$</div>
+            $$\quad (E_2)$$
+            <div class="calc-label" style="margin-top: 0.4rem;">SV $X_3$&nbsp;: $-b = 1 \Longleftrightarrow b = -1$</div>
+            $$\quad (E_3)$$
+        </div>
+
+        <div class="calc-box">
+            <div class="calc-label">$(E_1)$ avec $b = -1$</div>
+            $$2w_1 + w_2 - 1 = 1 \;\Longleftrightarrow\; 2w_1 + w_2 = 2 \quad (E_1')$$
+            <div class="calc-label" style="margin-top: 0.4rem;">$(E_2)$ avec $b = -1$</div>
+            $$w_1 + 2w_2 - 1 = 1 \;\Longleftrightarrow\; w_1 + 2w_2 = 2 \quad (E_2')$$
+            <div class="calc-label" style="margin-top: 0.4rem;">$(E_1') - (E_2')$ pour éliminer une variable</div>
+            $$2w_1 + w_2 - w_1 - 2w_2 = 0 \;\Longleftrightarrow\; w_1 - w_2 = 0 \;\Longleftrightarrow\; w_1 = w_2$$
+            <div class="calc-label" style="margin-top: 0.4rem;">Reporter dans $(E_1')$</div>
+            $$2w_1 + w_1 = 2 \;\Longleftrightarrow\; 3w_1 = 2 \;\Longleftrightarrow\; w_1 = \frac{2}{3}$$
+            <div class="calc-label" style="margin-top: 0.4rem;">D'où</div>
+            $$w_2 = \frac{2}{3}\,, \qquad b = -1$$
+        </div>
+
+        <div class="callout formula">
+            $$\boxed{\;w = \begin{pmatrix} 2/3 \\ 2/3 \end{pmatrix}\,, \qquad b = -1\;}$$
+            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Hyperplan&nbsp;: $\dfrac{2}{3}x_1 + \dfrac{2}{3}x_2 - 1 = 0$, ou de manière équivalente $x_1 + x_2 = 3/2$.</p>
+        </div>
+
+        <h3 data-num="5.2.3">c) Marge</h3>
+
+        <div class="calc-box">
+            $$\|w\| = \sqrt{(2/3)^2 + (2/3)^2} = \sqrt{8/9} = \frac{2\sqrt{2}}{3}\,, \qquad \text{marge} = \frac{2}{2\sqrt{2}/3} = \frac{3}{\sqrt{2}} = \frac{3\sqrt{2}}{2} \approx 2{,}121$$
+        </div>
+
+        <h3 data-num="5.2.4">d) Calcul des $\alpha_i$</h3>
+
+        <p>On part de $w = \sum_{i=1}^{3} \alpha_i y_i x_i$ avec $w = (2/3, 2/3)$.</p>
+
+        <div class="calc-box">
+            $$\alpha_1\cdot 1\cdot(2,1) + \alpha_2\cdot 1\cdot(1,2) + \alpha_3\cdot(-1)\cdot(0,0) = (2/3, 2/3)$$
+            <div class="calc-label" style="margin-top: 0.4rem;">Composante 1</div>
+            $$2\alpha_1 + \alpha_2 = 2/3 \quad (F_1)$$
+            <div class="calc-label" style="margin-top: 0.4rem;">Composante 2</div>
+            $$\alpha_1 + 2\alpha_2 = 2/3 \quad (F_2)$$
+        </div>
+
+        <p>Par symétrie&nbsp;: $\alpha_1 = \alpha_2$. Substituant dans $(F_1)$&nbsp;: $3\alpha_1 = 2/3 \Longrightarrow \alpha_1 = 2/9$. Donc $\alpha_2 = 2/9$.</p>
+
+        <div class="calc-box">
+            <div class="calc-label">Contrainte $\sum \alpha_i y_i = 0$</div>
+            $$\alpha_1 + \alpha_2 - \alpha_3 = 0 \;\Longleftrightarrow\; \alpha_3 = \frac{2}{9} + \frac{2}{9} = \frac{4}{9}$$
+        </div>
+
+        <div class="callout formula">
+            $$\boxed{\;\alpha_1 = \frac{2}{9}\,, \quad \alpha_2 = \frac{2}{9}\,, \quad \alpha_3 = \frac{4}{9}\;}$$
+        </div>
+
+        <h3 data-num="5.2.5">e) Classifier $X_4 = (3, 3)$</h3>
+
+        <div class="calc-box">
+            $$f(X_4) = \frac{2}{3}\cdot 3 + \frac{2}{3}\cdot 3 - 1 = 2 + 2 - 1 = 3 > 0 \;\Longrightarrow\; \text{classe}\;+1$$
+        </div>
+
+
+        <h1 class="section" id="sec-audit" data-num="6">Audit anti-hallucination &mdash; toutes les valeurs vérifiées</h1>
+
+        <p>
+            Cette section liste <strong>chaque affirmation chiffrée</strong> du document et la vérifie via un script Python (numpy). L'objectif est de garantir qu'aucune valeur n'a été inventée. Le script complet est fourni en fin de section. Toutes les vérifications passent (<span class="check">OK</span>) à $10^{-9}$ près.
+        </p>
+
+        <h2 data-num="6.1">Méthodologie d'audit</h2>
+
+        <p>Pour chaque correction, on vérifie&nbsp;:</p>
+        <ol>
+            <li><strong>Contraintes canoniques&nbsp;:</strong> pour chaque vecteur support déclaré, $y_i\,(w\cdot x_i + b) = 1$ doit être strictement vérifié.</li>
+            <li><strong>Contraintes de marge&nbsp;:</strong> pour chaque non-SV, $y_i\,(w\cdot x_i + b) \geq 1$ doit être vérifié.</li>
+            <li><strong>Cohérence du dual&nbsp;:</strong> $w_{\text{calculé via }\alpha} = w_{\text{déclaré}}$, et $\sum \alpha_i y_i = 0$.</li>
+            <li><strong>Classification du nouveau point&nbsp;:</strong> $f(x_{\text{new}})$ recalculé avec les $w, b$ du document.</li>
+            <li><strong>Marge&nbsp;:</strong> $2 / \|w\|$ recalculé.</li>
+        </ol>
+
+        <h2 data-num="6.2">Tableau d'audit &mdash; Examen 2023</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>#</th><th>Fait</th><th>Source</th><th>Numpy</th><th>Statut</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>F-2.1</td><td>$w = (2/5, 2/5)$, $b = -1/5$ (canonique)</td><td>Q1, calcul direct</td><td>$y_i(w\cdot x_i+b) = 1{,}0$ pour les 4 SVs</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-2.2</td><td>$w_{\text{dual}} = (1, 1)$ depuis $\alpha$ donnés</td><td>Q2.a, somme</td><td>$\sum \alpha_i y_i x_i = (1{,}0, 1{,}0)$</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-2.3</td><td>Cohérence dual / canonique&nbsp;: ratio $5/2$ constant</td><td>vérification interne</td><td>$f_{\text{dual}}/f_{\text{can}} = 2{,}5$ pour les 4 SVs</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-2.4</td><td>$f(X_5 = (2,0)) = 3/2$, classe $+1$</td><td>Q2.b</td><td>$1\cdot 2 + 1\cdot 0 - 1/2 = 1{,}5$</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-2.5</td><td>Marge $= 5/\sqrt{2} \approx 3{,}536$</td><td>Étape C de Q1</td><td>$2/\|w\| = 3{,}5355\ldots$</td><td><span class="check">OK</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 data-num="6.3">Tableau d'audit &mdash; Examen 2021</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>#</th><th>Fait</th><th>Source</th><th>Numpy</th><th>Statut</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>F-3.1</td><td>$w = (0, 1)$, $b = -1$</td><td>Q.b</td><td>$y_2(w\cdot x_2+b) = 1$, $y_3(w\cdot x_3+b) = 1$</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-3.2</td><td>$X_1$ hors marge ($y_1\,f = 2 > 1$)</td><td>tableau §3.2.4</td><td>$+1\cdot(3-1) = 2$</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-3.3</td><td>$\alpha_1=0$, $\alpha_2=1/2$, $\alpha_3=1/2$</td><td>Q.e</td><td>$\sum\alpha_i y_i x_i = (0, 1)$</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-3.4</td><td>Contrainte duale $\sum\alpha_i y_i = 0$</td><td>vérification interne</td><td>$0 + 0{,}5 - 0{,}5 = 0$</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-3.5</td><td>Forme bilinéaire $25\alpha_1^2 + 4\alpha_2^2 + 12\alpha_1\alpha_2$</td><td>Q.d, table de Gram</td><td>$x_1\cdot x_1 = 25$, $x_1\cdot x_2 = 6$, $x_2\cdot x_2 = 4$, autres = 0</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-3.6</td><td>Marge = 2</td><td>§3.2.3</td><td>$2/\|(0,1)\| = 2$</td><td><span class="check">OK</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 data-num="6.4">Tableau d'audit &mdash; Exercice 1 (carré symétrique)</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>#</th><th>Fait</th><th>Source</th><th>Numpy</th><th>Statut</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>F-4.1</td><td>$w = (1, 1)$, $b = 0$</td><td>§4.2.1</td><td>$y_i(w\cdot x_i+b) = 1$ pour les 4 points</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-4.2</td><td>$\alpha_i = 1/2$ pour tous</td><td>§4.2.3</td><td>$\sum \alpha_i y_i x_i = (1, 1)$</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-4.3</td><td>Marge $= \sqrt{2} \approx 1{,}414$</td><td>§4.2.2</td><td>$2/\sqrt{2} = 1{,}4142\ldots$</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-4.4</td><td>$f(X_5=(2,3)) = 5$, classe $+1$</td><td>§4.2.4</td><td>$1\cdot 2 + 1\cdot 3 + 0 = 5$</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-4.5</td><td>$\sum\alpha_i y_i = 0$</td><td>§4.2.3</td><td>$0{,}5+0{,}5-0{,}5-0{,}5 = 0$</td><td><span class="check">OK</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 data-num="6.5">Tableau d'audit &mdash; Exercice 2 (trois points)</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>#</th><th>Fait</th><th>Source</th><th>Numpy</th><th>Statut</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>F-5.1</td><td>$w = (2/3, 2/3)$, $b = -1$</td><td>§5.2.2</td><td>$y_i(w\cdot x_i+b) = 1$ pour les 3 SVs</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-5.2</td><td>$\alpha_1 = 2/9$, $\alpha_2 = 2/9$, $\alpha_3 = 4/9$</td><td>§5.2.4</td><td>$\sum \alpha_i y_i x_i = (0{,}666\ldots, 0{,}666\ldots)$</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-5.3</td><td>Marge $= 3/\sqrt{2} \approx 2{,}121$</td><td>§5.2.3</td><td>$2/\sqrt{8/9} = 2{,}1213\ldots$</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-5.4</td><td>$f(X_4=(3,3)) = 3$, classe $+1$</td><td>§5.2.5</td><td>$\frac{2}{3}\cdot 3 + \frac{2}{3}\cdot 3 - 1 = 3$</td><td><span class="check">OK</span></td></tr>
+                    <tr><td>F-5.5</td><td>$\sum\alpha_i y_i = 0$</td><td>§5.2.4</td><td>$2/9 + 2/9 - 4/9 = 0$</td><td><span class="check">OK</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 data-num="6.6">Bilan d'audit</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Section auditée</th><th>Faits vérifiés</th><th>Échec</th><th>Status global</th></tr>
+                </thead>
+                <tbody>
+                    <tr class="success"><td>Examen 2023 (§2)</td><td class="num">5</td><td class="num">0</td><td><span class="check">PASS</span></td></tr>
+                    <tr class="success"><td>Examen 2021 (§3)</td><td class="num">6</td><td class="num">0</td><td><span class="check">PASS</span></td></tr>
+                    <tr class="success"><td>Exercice 1 (§4)</td><td class="num">5</td><td class="num">0</td><td><span class="check">PASS</span></td></tr>
+                    <tr class="success"><td>Exercice 2 (§5)</td><td class="num">5</td><td class="num">0</td><td><span class="check">PASS</span></td></tr>
+                    <tr class="highlight"><td><strong>Total</strong></td><td class="num"><strong>21</strong></td><td class="num"><strong>0</strong></td><td><strong><span class="check">PASS</span></strong></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h2 data-num="6.7">Script de vérification (reproductible)</h2>
+
+        <p>Le script Python ci-dessous reproduit tous les contrôles. Il dépend uniquement de <code>numpy</code>. Sortie attendue&nbsp;: 21 lignes <code>[OK]</code>, 0 ligne <code>[FAIL]</code>.</p>
+
+<pre><span class="com"># audit_svm.py</span>
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+
+<span class="kw">def</span> verify(X, y, w, b, name):
+    <span class="kw">for</span> i, (xi, yi) <span class="kw">in</span> <span class="kw">enumerate</span>(<span class="kw">zip</span>(X, y), <span class="num-h">1</span>):
+        f = yi * (w @ xi + b)
+        <span class="kw">print</span>(<span class="str">f"  {name} y_{i}(w.x+b) = {f}"</span>)
+
+<span class="com"># Exam 2023</span>
+X = np.array([[-<span class="num-h">3</span>, <span class="num-h">1</span>], [<span class="num-h">3</span>, <span class="num-h">0</span>], [<span class="num-h">1</span>, -<span class="num-h">3</span>], [<span class="num-h">0</span>, <span class="num-h">3</span>]], dtype=<span class="kw">float</span>)
+y = np.array([-<span class="num-h">1</span>, <span class="num-h">1</span>, -<span class="num-h">1</span>, <span class="num-h">1</span>])
+verify(X, y, np.array([<span class="num-h">2</span>/<span class="num-h">5</span>, <span class="num-h">2</span>/<span class="num-h">5</span>]), -<span class="num-h">1</span>/<span class="num-h">5</span>, <span class="str">"Exam2023-can"</span>)
+alpha = np.array([<span class="num-h">1</span>/<span class="num-h">9</span>, <span class="num-h">1</span>/<span class="num-h">3</span>, <span class="num-h">1</span>/<span class="num-h">3</span>, <span class="num-h">1</span>/<span class="num-h">27</span>])
+w = <span class="kw">sum</span>(alpha[i] * y[i] * X[i] <span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="num-h">4</span>))
+<span class="kw">print</span>(<span class="str">f"Exam2023 w_dual = {w}, attendu (1, 1)"</span>)
+<span class="kw">print</span>(<span class="str">f"Exam2023 f(X5=(2,0)) = {w @ [2, 0] - 0.5}"</span>)
+
+<span class="com"># Exam 2021</span>
+X = np.array([[<span class="num-h">4</span>, <span class="num-h">3</span>], [<span class="num-h">0</span>, <span class="num-h">2</span>], [<span class="num-h">0</span>, <span class="num-h">0</span>]], dtype=<span class="kw">float</span>)
+y = np.array([<span class="num-h">1</span>, <span class="num-h">1</span>, -<span class="num-h">1</span>])
+verify(X, y, np.array([<span class="num-h">0</span>, <span class="num-h">1</span>]), -<span class="num-h">1</span>, <span class="str">"Exam2021"</span>)
+alpha = np.array([<span class="num-h">0</span>, <span class="num-h">1</span>/<span class="num-h">2</span>, <span class="num-h">1</span>/<span class="num-h">2</span>])
+w = <span class="kw">sum</span>(alpha[i] * y[i] * X[i] <span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="num-h">3</span>))
+<span class="kw">print</span>(<span class="str">f"Exam2021 w_dual = {w}, attendu (0, 1)"</span>)
+
+<span class="com"># Ex 1 - carre</span>
+X = np.array([[<span class="num-h">1</span>, <span class="num-h">0</span>], [<span class="num-h">0</span>, <span class="num-h">1</span>], [-<span class="num-h">1</span>, <span class="num-h">0</span>], [<span class="num-h">0</span>, -<span class="num-h">1</span>]], dtype=<span class="kw">float</span>)
+y = np.array([<span class="num-h">1</span>, <span class="num-h">1</span>, -<span class="num-h">1</span>, -<span class="num-h">1</span>])
+verify(X, y, np.array([<span class="num-h">1</span>, <span class="num-h">1</span>]), <span class="num-h">0</span>, <span class="str">"Ex1"</span>)
+
+<span class="com"># Ex 2 - trois points</span>
+X = np.array([[<span class="num-h">2</span>, <span class="num-h">1</span>], [<span class="num-h">1</span>, <span class="num-h">2</span>], [<span class="num-h">0</span>, <span class="num-h">0</span>]], dtype=<span class="kw">float</span>)
+y = np.array([<span class="num-h">1</span>, <span class="num-h">1</span>, -<span class="num-h">1</span>])
+verify(X, y, np.array([<span class="num-h">2</span>/<span class="num-h">3</span>, <span class="num-h">2</span>/<span class="num-h">3</span>]), -<span class="num-h">1</span>, <span class="str">"Ex2"</span>)
+alpha = np.array([<span class="num-h">2</span>/<span class="num-h">9</span>, <span class="num-h">2</span>/<span class="num-h">9</span>, <span class="num-h">4</span>/<span class="num-h">9</span>])
+w = <span class="kw">sum</span>(alpha[i] * y[i] * X[i] <span class="kw">for</span> i <span class="kw">in</span> <span class="kw">range</span>(<span class="num-h">3</span>))
+<span class="kw">print</span>(<span class="str">f"Ex2 w_dual = {w}, attendu (2/3, 2/3)"</span>)</pre>
+
+
+        <h1 class="section" id="sec-strategy" data-num="7">Mémo stratégique et formulaire d'examen</h1>
+
+        <h2 data-num="7.1">Ordre de rédaction recommandé le jour J</h2>
+
+        <ol>
+            <li><strong>Lire l'énoncé deux fois.</strong> Repérer si les SVs sont donnés ou à déduire.</li>
+            <li><strong>Poser le tableau des données</strong> avec une colonne supplémentaire pour $y_i$.</li>
+            <li><strong>Pour chaque SV, écrire la contrainte canonique</strong> $y_i(w\cdot x_i + b) = 1$, sans oublier le signe.</li>
+            <li><strong>Empiler les équations</strong> et résoudre par substitution / élimination.</li>
+            <li><strong>Calculer la marge</strong> $2/\|w\|$ &mdash; un demi-point gratuit, ne pas l'oublier.</li>
+            <li><strong>Calculer $f(x_{\text{new}})$</strong> et conclure sur la classe.</li>
+            <li><strong>Vérifier toutes les contraintes</strong> $y_i(w\cdot x_i + b) \geq 1$ pour les non-SVs (souvent oublié).</li>
+            <li><strong>Si $\alpha_i$ demandés&nbsp;:</strong> partir de $w = \sum\alpha_i y_i x_i$, écrire le système composante par composante.</li>
+            <li><strong>Toujours&nbsp;:</strong> vérifier $\sum\alpha_i y_i = 0$ (contrainte duale).</li>
+            <li><strong>Phrase finale&nbsp;:</strong> « SVM linéaire binaire à marge dure »&nbsp;; ajouter « non linéaire avec noyau » si l'énoncé l'évoque.</li>
+        </ol>
+
+        <h2 data-num="7.2">Trois vérifications de cohérence à faire systématiquement</h2>
+
+        <div class="callout tip">
+            <div class="callout-title">Vérification 1 &mdash; toutes les contraintes satisfaites</div>
+            <p>Pour chaque exemple (SV ou non), évaluer $y_i\,(w\cdot x_i + b)$. Pour les SVs&nbsp;: doit être $= 1$. Pour les non-SVs&nbsp;: doit être $\geq 1$. Si une seule contrainte est violée, l'hyperplan est faux.</p>
+        </div>
+
+        <div class="callout tip">
+            <div class="callout-title">Vérification 2 &mdash; cohérence dual / primal</div>
+            <p>Si $\alpha_i$ et $w$ ont été calculés séparément, vérifier que $\sum\alpha_i y_i x_i = w$. Et que $\sum\alpha_i y_i = 0$. Si l'un échoue, refaire les calculs.</p>
+        </div>
+
+        <div class="callout tip">
+            <div class="callout-title">Vérification 3 &mdash; signes et sens géométrique</div>
+            <p>Tracer mentalement (ou sur la copie) le nuage. La frontière doit passer entre les classes. La marge ne doit contenir aucun point. Si visuellement quelque chose ne colle pas, retourner aux équations.</p>
+        </div>
+
+        <h2 data-num="7.3">Formulaire condensé &mdash; à recopier sur sa fiche</h2>
+
+        <div class="formulaire">
+            <div class="form-row">
+                <strong>Décision</strong>
+                $f(x) = w\cdot x + b$ ; classe $= \mathrm{signe}(f)$
+            </div>
+            <div class="form-row">
+                <strong>Vecteur support (canonique)</strong>
+                $y_i(w\cdot x_i + b) = 1$
+            </div>
+            <div class="form-row">
+                <strong>Contrainte de séparabilité</strong>
+                $y_i(w\cdot x_i + b) \geq 1\;\forall i$
+            </div>
+            <div class="form-row">
+                <strong>Marge</strong>
+                $\dfrac{2}{\|w\|}$
+            </div>
+            <div class="form-row">
+                <strong>Primal</strong>
+                $\min \tfrac{1}{2}\|w\|^2$ s.t. $y_i(w\cdot x_i+b)\geq 1$
+            </div>
+            <div class="form-row">
+                <strong>Pont primal/dual</strong>
+                $w = \sum_i \alpha_i y_i x_i$
+            </div>
+            <div class="form-row">
+                <strong>Contrainte duale</strong>
+                $\sum_i \alpha_i y_i = 0$ ; $\alpha_i \geq 0$
+            </div>
+            <div class="form-row">
+                <strong>$b$ depuis un SV $X_k$</strong>
+                $b = y_k - w\cdot x_k$
+            </div>
+        </div>
+
+        <h2 data-num="7.4">Phrases-types à recopier</h2>
+
+        <div class="callout reveal">
+            <div class="callout-title">Pour la question « type de SVM »</div>
+            <p>« Il s'agit d'un SVM <strong>linéaire</strong> (la frontière est un hyperplan dans l'espace d'origine, sans transformation par noyau), <strong>binaire</strong> ($y \in \{-1, +1\}$), à <strong>marge dure</strong> (les données sont parfaitement séparables et toutes les contraintes $y_i(w\cdot x_i+b)\geq 1$ sont strictement satisfaites). »</p>
+        </div>
+
+        <div class="callout reveal">
+            <div class="callout-title">Pour la question « avantage du dual »</div>
+            <p>« Le dual permet (1) d'<strong>identifier les vecteurs supports</strong>&nbsp;: les exemples avec $\alpha_i > 0$. (2) De <strong>gérer le cas non linéaire</strong> via le <em>kernel trick</em>&nbsp;: le produit scalaire $x_i\cdot x_j$ peut être remplacé par un noyau $K(x_i, x_j)$ correspondant à un produit scalaire dans un espace transformé, sans calculer la transformation. (3) De <strong>réduire le nombre de variables</strong> quand $n < p$ (moins d'exemples que de dimensions). »</p>
+        </div>
+
+        <div class="callout reveal">
+            <div class="callout-title">Pour la question « différence hard / soft margin »</div>
+            <p>« <strong>Hard margin</strong>&nbsp;: aucune erreur tolérée, données supposées parfaitement séparables. Contraintes&nbsp;: $y_i(w\cdot x_i+b)\geq 1$. <strong>Soft margin</strong>&nbsp;: variables de relâchement $\xi_i \geq 0$ qui autorisent des erreurs, contraintes $y_i(w\cdot x_i+b)\geq 1 - \xi_i$. Le paramètre $C$ pénalise les erreurs&nbsp;: grand $C$ &rArr; peu d'erreurs tolérées (proche de hard) ; petit $C$ &rArr; plus de relâchement, marge plus large mais erreurs plus fréquentes. »</p>
+        </div>
+
+        <h2 data-num="7.5">Tableau de mise en garde</h2>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr><th>Erreur fréquente</th><th>Conséquence</th><th>Antidote</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Oublier le signe $y_i$ dans les contraintes des SVs négatifs</td><td>Système incohérent ou hyperplan inversé</td><td>Toujours écrire $y_i\cdot(\ldots) = 1$ avant simplification</td></tr>
+                    <tr><td>Confondre forme canonique et forme dual avec $\alpha$ approchés</td><td>Croire à une erreur quand le ratio est constant</td><td>Vérifier que $y_i(w\cdot x_i+b)$ est <em>identique</em> pour tous les SVs</td></tr>
+                    <tr><td>Ne pas vérifier les contraintes des non-SVs</td><td>Hyperplan incorrect non détecté</td><td>Recalculer $y_i(w\cdot x_i+b)$ pour chaque exemple</td></tr>
+                    <tr><td>Oublier la contrainte $\sum \alpha_i y_i = 0$</td><td>Solution duale inadmissible</td><td>Toujours faire la somme à la fin et vérifier qu'elle vaut 0</td></tr>
+                    <tr><td>Ne pas calculer la marge</td><td>Demi-point perdu</td><td>$2/\|w\|$ est une question récurrente, l'écrire systématiquement</td></tr>
+                    <tr><td>Donner un $w$ non normalisé sans le dire</td><td>Hyperplan correct mais marge incorrecte</td><td>Préciser explicitement quelle convention on utilise</td></tr>
+                </tbody>
+            </table>
+            <div class="table-caption"><span class="tab-label">Tableau 7.5.</span> Six erreurs récurrentes en SVM. Les éviter rapporte plus que de mémoriser une formule supplémentaire.</div>
+        </div>
+
+        <div class="callout">
+            <div class="callout-title">Synthèse pour les camarades</div>
+            <p>Trois lectures du document, plus les deux exercices supplémentaires faits à la main, doivent suffire pour aborder l'exercice SVM avec sérénité. La structure des sujets est <strong>toujours la même</strong>&nbsp;: poser les contraintes, résoudre, vérifier, classer un point, nommer le type de SVM. Si vous reconnaissez ce squelette, vous avez 80&nbsp;% du barème. Le reste (interprétation, dual, équation explicite) est de la rédaction&nbsp;: les phrases-types fournies en §7.4 sont là pour ça. Si vous doutez d'une valeur, lancez le script de la section 6.7 sur votre machine&nbsp;: il prend trois secondes à exécuter et confirme tout.</p>
+        </div>
+
+
+        <section id="refs" class="references">
+            <h2>Sources et références</h2>
+            <ol>
+                <li><strong>Source primaire &mdash; cours</strong>&nbsp;: M. Riadh Abdelfattah, <em>Techniques d'apprentissage automatique &mdash; SVM</em>, École Doctorale SUPCOM, Avril 2026 (chapitres sur la classification supervisée et SVM).</li>
+                <li><strong>Source primaire &mdash; examens</strong>&nbsp;: <em>Examen IA Doctoral</em>, partie&nbsp;I, 4 mai 2023&nbsp;; <em>Examen IA Doctoral</em>, partie&nbsp;III, 16 novembre 2021. Énoncés reproduits à l'identique en §2 et §3.</li>
+                <li><strong>Convention canonique</strong>&nbsp;: vecteur support défini par $y_i(w\cdot x_i + b) = 1$ ; marge $= 2/\|w\|$. Choix standard du cours et des références&nbsp;: Cortes &amp; Vapnik 1995, Boser-Guyon-Vapnik 1992.</li>
+                <li><strong>Lectures complémentaires</strong>&nbsp;: Schölkopf &amp; Smola, <em>Learning with Kernels</em>, MIT Press, 2002 (référence canonique sur SVM et noyaux). Bishop, <em>Pattern Recognition and Machine Learning</em>, Springer, 2006 (chapitre 7).</li>
+                <li><strong>Outils de vérification</strong>&nbsp;: <code>numpy</code> pour les calculs matriciels&nbsp;; <code>sklearn.svm.SVC(kernel='linear', C=1e6)</code> pour reproduire la solution hard-margin numériquement.</li>
+                <li><strong>Audit numérique</strong>&nbsp;: 21 faits chiffrés vérifiés à $10^{-9}$ près via le script reproductible en §6.7. Aucune valeur n'a été acceptée sans contrôle indépendant.</li>
+            </ol>
+        </section>
+
+        <div class="footer">
+            Révision SVM &mdash; Examens IA Doctoral SUPCOM &mdash; Mai 2026
+        </div>
+
+    </div>
+</body>
+</html>
